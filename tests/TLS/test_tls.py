@@ -34,9 +34,9 @@ def add_tls_section(fname, contents):
             # Assume only one TLS segment exists (will fail on an already modified binary)
             if s.header['p_type'] == 'PT_TLS':
                 tls_section_offset = s.header['p_memsz'] + len(tls_section_contents)
-                print 'old section is 0x%x (%x with padding)' % (s.header['p_memsz'], s.header['p_memsz'] + (4 - s.header['p_memsz'] % 4))
-                print 'new content is 0x%x (%x with padding)' % (len(contents), len(contents) + (4 - len(contents) % 4))
-                print 'overall        0x%x (%x with padding)' % (tls_section_offset, tls_section_offset + (4 - tls_section_offset % 4))
+                print('old section is 0x%x (%x with padding)' % (s.header['p_memsz'], s.header['p_memsz'] + (4 - s.header['p_memsz'] % 4)))
+                print('new content is 0x%x (%x with padding)' % (len(contents), len(contents) + (4 - len(contents) % 4)))
+                print('overall        0x%x (%x with padding)' % (tls_section_offset, tls_section_offset + (4 - tls_section_offset % 4)))
                 return tls_section_offset + (4 - tls_section_offset % 4)
     return len(contents) + (4 - len(contents) % 4)  # If there is no TLS segment
 
@@ -50,15 +50,15 @@ def get_tls_content(elf):
     content = b''
     if tls_section_added:
         content += tls_section_contents
-    print 'length of new contents: 0x%x' % len(content)
+    print('length of new contents: 0x%x' % len(content))
     for entry in elf.shdrs['entries']:
         if (entry.sh_flags & SHF_TLS) == SHF_TLS:
             if entry.sh_type == SHT_NOBITS:  # bss has no contents
                 content += '\0' * entry.sh_size  # fill bss space with 0
-                print 'adding .tbss section of length: 0x%x' % entry.sh_size
+                print('adding .tbss section of length: 0x%x' % entry.sh_size)
             else:
                 content += entry.contents
-                print 'adding .tdata section of length: 0x%x' % len(entry.contents)
+                print('adding .tdata section of length: 0x%x' % len(entry.contents))
     return content
 
 
@@ -67,11 +67,11 @@ def main(filename):
     elf = ELFManip(filename, num_adtl_segments=NUM_REQUESTED_SEGMENTS)
 
     new_data = "data that will hopefully go into thread local storage"
-    print 'ADDING TLS SECTION'
+    print('ADDING TLS SECTION')
 
     off = add_tls_section(filename, new_data)
-    print 'New data starting at offset %d (0x%x)' % (off, off)
-    print 'CONTENTS (length %d) ARE %s' % (len(tls_section_contents), tls_section_contents)
+    print('New data starting at offset %d (0x%x)' % (off, off))
+    print('CONTENTS (length %d) ARE %s' % (len(tls_section_contents), tls_section_contents))
 
     # print '---TLS SECTIONS---'
     # print elf.shdrs['entries'][18] #.tdata
@@ -85,7 +85,7 @@ def main(filename):
     new_phdr_offset = elf.relocate_phdrs()
 
     if elf.phdrs['max_num'] < old_num_phdrs + NUM_REQUESTED_SEGMENTS:
-        print "failed to secure %d additional segment header entries" % NUM_REQUESTED_SEGMENTS
+        print("failed to secure %d additional segment header entries" % NUM_REQUESTED_SEGMENTS)
         exit()
 
 
@@ -93,8 +93,8 @@ def main(filename):
     # with open(newbytes_filename, 'r') as f:
     #    newbytes = f.read()
     newbytes = get_tls_content(elf)
-    print 'newbytes is %s' % newbytes
-    print 'newbyte length: 0x%x' % len(newbytes)
+    print('newbytes is %s' % newbytes)
+    print('newbyte length: 0x%x' % len(newbytes))
 
     '''if len(newbytes)%4 != 0:
         print 'newbytes not aligned %d'%len(newbytes)

@@ -23,7 +23,7 @@ if __name__ == "__main__":
     new_phdr_offset = elf.relocate_phdrs(use_methods=[elf._phdr_hack3])
 
     if elf.phdrs['max_num'] < old_num_phdrs + NUM_REQUESTED_SEGMENTS:
-        print "failed to secure %d additional segment header entries" % NUM_REQUESTED_SEGMENTS
+        print("failed to secure %d additional segment header entries" % NUM_REQUESTED_SEGMENTS)
         exit()
 
     newbytes_section = CustomSection(NEWBYTES, sh_addr=0x07000000)

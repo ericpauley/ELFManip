@@ -13,7 +13,7 @@ NUM_REQUESTED_SEGMENTS = 2
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print "Usage: %s [file]" % sys.argv[0]
+        print("Usage: %s [file]" % sys.argv[0])
         exit()
 
     elf_filename = sys.argv[1]
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     new_phdr_offset = elf.relocate_phdrs()
 
     if elf.phdrs['max_num'] < old_num_phdrs + NUM_REQUESTED_SEGMENTS:
-        print "failed to secure %d additional segment header entries" % NUM_REQUESTED_SEGMENTS
+        print("failed to secure %d additional segment header entries" % NUM_REQUESTED_SEGMENTS)
         exit()
 
 
